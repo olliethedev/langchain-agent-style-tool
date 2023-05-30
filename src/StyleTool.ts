@@ -39,17 +39,10 @@ interface ParsedInput {
     // selectors: string[];
 }
 
-// Helper function to parse input
-const parseInput = (input: string): ParsedInput => {
-    input = input.replace(/^"(.*)"$/, '$1');
-    return { url: input }
-};
-
 // Helper function to fetch and process styles
 const fetchAndProcessStyles = async (input: string): Promise<string> => {
     try {
         const { url } = parseInput(input);
-
 
         // Add default selectors
         const selectors = ["button", "input", "a", "p", "span", "img", "h1", "h2", "h3", "h4", "h5", "h6", "textarea", "select", "option", "label", "form", "table", "tr", "td", "th", "ul", "ol", "li", "nav", "header", "footer", "section", "article", "main", "aside", "div"];
@@ -153,15 +146,13 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
             }
         }
 
-
-        console.log(JSON.stringify(sortedStyles));
+        console.log(JSON.stringify(sortedStyles, null, 2));
 
         if (Object.keys(sortedStyles).length === 0) {
             return "No styles found for the given selectors.";
         }
         const safeLength = 7000;
         const stylesSafeLength = JSON.stringify(sortedStyles).slice(0, safeLength);
-        console.log(stylesSafeLength);
         return stylesSafeLength;
     } catch (error: any) {
         console.error(error);
@@ -169,11 +160,17 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
     }
 };
 
+// Helper function to parse input
+const parseInput = (input: string): ParsedInput => {
+    input = input.replace(/^"(.*)"$/, '$1');
+    return { url: input }
+};
+
 
 // Define the tool
 const styleTool = new DynamicTool({
     name: "StyleExtractorTool",
-    description: `Return JSON representation of the most popular CSS style properties for elements on a webpage and their counts from a given URL.
+    description: `Return JSON representation of the most common CSS style properties for elements on a webpage and their counts from a given URL.
      Input should be a single valid url. Example: "https://www.google.com"`,
     func: fetchAndProcessStyles,
 });

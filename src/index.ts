@@ -5,7 +5,9 @@ import StyleTool from "./StyleTool";
 
 // Define the URL and input message as constants for better readability
 const URL = "https://www.answera.ai/";
+
 const ELEMENT_DESCRIPTION = "Hero section with an image, title, subtitle, and a button"
+
 const inputMessage = `With the aid of the StyleExtractorTool, our task is to construct an HTML page featuring a ${ELEMENT_DESCRIPTION}. The style of this element should be inspired by the aesthetics of ${URL}. We will restrict the use of the tool to only one instance. Your output should exclusively consist of valid HTML and CSS code, and any other information or output should be omitted. Please refrain from utilizing CSS variables such as var(--box-shadow). For text content, Lorem Ipsum should be used. For image URLs, please use the following placeholder: http://via.placeholder.com/640x360. It's crucial to ensure a high contrast between the background and foreground to maintain legibility.
 `;
 
