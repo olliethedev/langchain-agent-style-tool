@@ -41,11 +41,6 @@ interface ParsedInput {
 
 // Helper function to parse input
 const parseInput = (input: string): ParsedInput => {
-    // const inputObject = JSON.parse(input);
-    // const url = inputObject.url;
-    // const selectors = inputObject.selectors;
-    // return { url, selectors };
-    //remove start and end quotes if anybut don't remove quotes in the middle
     input = input.replace(/^"(.*)"$/, '$1');
     return { url: input }
 };
@@ -64,7 +59,7 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
         const html = response.data;
 
         // Parse the HTML and extract the CSS styles
-        const dom = new JSDOM(html, { url, resources: "usable", });
+        const dom = new JSDOM(html, { url, resources: "usable", runScripts: "outside-only" });
         const document = dom.window.document;
 
 
@@ -83,8 +78,8 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
         // Define the properties we're interested in
         const relevantProperties = [
             'color', 'background', 'background-color', 'background-image', 'font-family', 'font-size',
-            'margin', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right',
-            'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'padding-block', 'padding-inline',
+            'margin', 'margin-block', 'margin-inline',
+            'padding', 'padding-block', 'padding-inline',
             'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
             'border-radius',
             'border', 'border-width', 'border-top-width', 'border-bottom-width', 'border-left-width', 'border-right-width',
@@ -94,6 +89,7 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
 
         const valueRegexesToIgnore = [
             /url\(data:image/,
+            /url\(http/,
         ];
 
         // Extract the styles from the selectors
@@ -159,17 +155,6 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
 
 
         console.log(JSON.stringify(sortedStyles));
-
-        // remove properties with single value
-
-        for (const [selector, properties] of Object.entries(sortedStyles)) {
-            for (const [property, counts] of Object.entries(properties)) {
-                if (counts.length === 1) {
-                    delete sortedStyles[selector][property];
-                }
-            }
-        }
-
 
         if (Object.keys(sortedStyles).length === 0) {
             return "No styles found for the given selectors.";

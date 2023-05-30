@@ -4,11 +4,10 @@ import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import StyleTool from "./StyleTool";
 
 // Define the URL and input message as constants for better readability
-const URL = "https://bearly.ai/";
-const ELEMENT_DESCRIPTON = "Hero section with a title, subtitle, and a button"
-const inputMessage = `Using the StyleExtractorTool let's write html and css only using vanilla css classes for 
-  a page with a single ${ELEMENT_DESCRIPTON} inspired by the style of ${ URL }. Use the tool no more than once. Only return 
-  valid css/html code and nothing else. Avoid using css variables like var(--box-shadow). Use Lorem Ipsum for text.`;
+const URL = "https://www.answera.ai/";
+const ELEMENT_DESCRIPTION = "Hero section with an image, title, subtitle, and a button"
+const inputMessage = `With the aid of the StyleExtractorTool, our task is to construct an HTML page featuring a ${ELEMENT_DESCRIPTION}. The style of this element should be inspired by the aesthetics of ${URL}. We will restrict the use of the tool to only one instance. Your output should exclusively consist of valid HTML and CSS code, and any other information or output should be omitted. Please refrain from utilizing CSS variables such as var(--box-shadow). For text content, Lorem Ipsum should be used. For image URLs, please use the following placeholder: http://via.placeholder.com/640x360. It's crucial to ensure a high contrast between the background and foreground to maintain legibility.
+`;
 
 async function run() {
     // Initialize the model with desired parameters
@@ -16,7 +15,6 @@ async function run() {
         modelName:"gpt-3.5-turbo",
         temperature: 0.4,
         verbose: true,
-        maxTokens: 2000,
         timeout: 2 * 60 * 1000
     });
 
