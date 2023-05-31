@@ -34,6 +34,23 @@ const systemColors = {
     'WindowText': 'rgb(0,0,0)'
 } as Record<string, string>;
 
+const selectors = ["button", "input", "a", "p", "span", "img", "h1", "h2", "h3", "h4", "h5", "h6", "textarea", "select", "option", "label", "form", "table", "tr", "td", "th", "ul", "ol", "li", "nav", "header", "footer", "section", "article", "main", "aside", "div"];
+
+const relevantProperties = [
+    'color', 'background', 'background-color', 'background-image', 'font-family', 'font-size',
+    'margin', 'margin-block', 'margin-inline',
+    'padding', 'padding-block', 'padding-inline',
+    'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
+    'border-radius',
+    'border', 'border-width', 'border-top-width', 'border-bottom-width', 'border-left-width', 'border-right-width',
+    'box-shadow',
+];
+
+const valueRegexesToIgnore = [
+    /url\(data:image/,
+    /url\(http/,
+];
+
 interface ParsedInput {
     url: string;
     // selectors: string[];
@@ -44,9 +61,6 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
     try {
         const { url } = parseInput(input);
 
-        // Add default selectors
-        const selectors = ["button", "input", "a", "p", "span", "img", "h1", "h2", "h3", "h4", "h5", "h6", "textarea", "select", "option", "label", "form", "table", "tr", "td", "th", "ul", "ol", "li", "nav", "header", "footer", "section", "article", "main", "aside", "div"];
-
         // Fetch the HTML of the webpage
         const response = await axios.get(url);
         const html = response.data;
@@ -54,7 +68,6 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
         // Parse the HTML and extract the CSS styles
         const dom = new JSDOM(html, { url, resources: "usable", runScripts: "outside-only" });
         const document = dom.window.document;
-
 
         const loaderPromise = new Promise<string>((resolve, reject) => {
             dom.window.addEventListener('load', function () {
@@ -64,30 +77,10 @@ const fetchAndProcessStyles = async (input: string): Promise<string> => {
             // Set a timeout to reject the promise after a certain amount of time to prevent hanging forever in case the 'load' event never fires.
             setTimeout(() => reject('Timeout'), 10000);
         });
-
         await loaderPromise;
-
-
-        // Define the properties we're interested in
-        const relevantProperties = [
-            'color', 'background', 'background-color', 'background-image', 'font-family', 'font-size',
-            'margin', 'margin-block', 'margin-inline',
-            'padding', 'padding-block', 'padding-inline',
-            'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
-            'border-radius',
-            'border', 'border-width', 'border-top-width', 'border-bottom-width', 'border-left-width', 'border-right-width',
-            'box-shadow',
-        ];
-
-
-        const valueRegexesToIgnore = [
-            /url\(data:image/,
-            /url\(http/,
-        ];
 
         // Extract the styles from the selectors
         const styleCounts: Record<string, Record<string, Record<string, number>>> = {};
-
 
         // Extract the styles from the selectors
         for (const selector of selectors) {
